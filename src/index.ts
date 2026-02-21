@@ -33,7 +33,11 @@ async function think(input: string): Promise<string> {
     : "Sorry, I couldn't process that.";
 }
 
-const agent = await Agent.createFromEnv();
+const dbDir = process.env.XMTP_DB_DIRECTORY || ".";
+const agent = await Agent.createFromEnv({
+  dbPath: (inboxId) =>
+    `${dbDir}/${process.env.XMTP_ENV || "production"}-${inboxId.slice(0, 8)}.db3`,
+});
 
 agent.on("text", async (ctx) => {
   const response = await think(ctx.message.content);
